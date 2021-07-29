@@ -1,5 +1,5 @@
 using Statistics
-using DataFrames
+using Tables
 
 """
     d_eucl(L1::AbstractArray, L2::AbstractArray)
@@ -66,10 +66,14 @@ mutable struct Kmeans{T<:AbstractFloat}
     end
 end
 
-Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)
-Kmeans(df::DataFrame, K::Int) = Kmeans(Matrix{Float64}(df), K)
+# Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)
+# Kmeans(df::DataFrame, K::Int) = Kmeans(Matrix{Float64}(df), K)
 
-
+function Kmeans(df, K::Int)
+    df = Tables.istable(df) ? Tables.matrix(df) : Matrix{Float64}(df) 
+    eltype(df) <: AbstractFloat || (df = Matrix{Float64}(df))
+    return Kmeans(df, K)
+end
 
 """
     iteration!(model::Kmeans{T}, niter::Int) where {T<:AbstractFloat}
