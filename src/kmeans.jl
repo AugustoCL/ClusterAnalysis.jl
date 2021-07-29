@@ -8,8 +8,8 @@ Calculate euclidian distance from two arrays.
 """
 function d_eucl(L1::AbstractArray, L2::AbstractArray)
     @assert length(L1) == length(L2)
-    dist = sum( (L1 - L2).^2 )
-    return sqrt(dist)
+    dist = √(sum((L1 - L2).^2))
+    return dist
 end
 
 """
