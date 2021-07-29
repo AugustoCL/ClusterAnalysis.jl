@@ -2,13 +2,13 @@ using Statistics
 using Tables
 
 """
-    d_eucl(L1::AbstractArray, L2::AbstractArray)
+    euclidian(a::AbstractArray, b::AbstractArray)
 
 Calculate euclidian distance from two arrays.
 """
-function d_eucl(L1::AbstractArray, L2::AbstractArray)
-    @assert length(L1) == length(L2)
-    dist = √(sum((L1 - L2).^2))
+function euclidian(a::AbstractArray, b::AbstractArray)
+    @assert length(a) == length(b)
+    dist = √(sum((a - b).^2))
     return dist
 end
 
@@ -50,7 +50,7 @@ mutable struct Kmeans{T<:AbstractFloat}
         # estimate clusters
         cluster = T[]
         for obs in eachrow(df)
-            dist = [d_eucl(obs, c) for c in centroids]
+            dist = [euclidian(obs, c) for c in centroids]
             cl = argmin(dist)
             push!(cluster, cl)
         end
@@ -95,7 +95,7 @@ function iteration!(model::Kmeans{T}, niter::Int) where {T<:AbstractFloat}
         # estimate cluster to all observations 
         cls = T[]
         for obs in eachrow(model.df)
-            dist = [d_eucl(obs, c) for c in centroids]
+            dist = [euclidian(obs, c) for c in centroids]
             cl = argmin(dist)
             push!(cls, cl)
         end
