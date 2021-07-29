@@ -70,7 +70,7 @@ Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)
 # Kmeans(df::DataFrame, K::Int) = Kmeans(Matrix{Float64}(df), K)
 
 function Kmeans(df, K::Int)
-    Tables.istable(df) ? (df = Tables.matrix(df)) : throw(ArgumentError("The passed df argument not implementes Tables.jl interace.")) 
+    Tables.istable(df) ? (df = Tables.matrix(df)) : throw(ArgumentError("The df argument passed does not implement the Tables.jl interface.")) 
     eltype(df) <: AbstractFloat || (df = Matrix{Float64}(df))
     return Kmeans(df, K)
 end
