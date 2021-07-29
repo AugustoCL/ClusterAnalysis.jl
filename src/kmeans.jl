@@ -19,8 +19,8 @@ Create the K-means cluster model and also initialize calculating the first centr
 
 # Constructors
 ```julia 
-Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)
-Kmeans(df::DataFrame, K::Int) = Kmeans(Matrix{Float64}(df), K)
+Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K) : where df is an Matrix{T} where T is not a subtype of AbstractFloat.
+Kmeans(df, K::Int) : where df implements the Tables.jl interface, e.g.: DataFrame type from DataFrames.jl package.   
 ```
 
 # Fields
