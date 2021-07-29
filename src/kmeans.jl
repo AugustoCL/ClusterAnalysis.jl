@@ -18,19 +18,19 @@ end
 Create the K-means cluster model and also initialize calculating the first centroids, estimating clusters and total variance.
 
 # Constructors
-```julia
-Kmeans(df::Matrix{T}, K::Int) where {T<:AbstractFloat} : default constructor. 
-Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K) : where df is an Matrix{T} where T is not a subtype of AbstractFloat.
-Kmeans(df, K::Int) : where df implements the Tables.jl interface, e.g.: DataFrame type from DataFrames.jl package.   
-```
+`Kmeans(df::Matrix{T}, K::Int) where {T<:AbstractFloat}` : default constructor.  
+`Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)` : where `df` is an `Matrix{T}` where `T` is not a subtype of `AbstractFloat`.   
+`Kmeans(df, K::Int)` : where `df` implements the Tables.jl interface, e.g.: `DataFrame` type from DataFrames.jl package.   
+
 
 # Fields
-- df::Matrix{T}: return the dataset in a Matrix form.
-- K::Int: return the number of cluster of the model.
-- centroids::Vector{Vector{T}}: returns the values of each variable for each centroid 
-- cluster::Vector{T}: return the cluster output for each observation in the dataset.
-- variance::T: return the total variance of model, summing the variance of each cluster.
-Where T is a subtype of AbstractFloat.
+- `df::Matrix{T}`: return the dataset in a Matrix form.
+- `K::Int`: return the number of cluster of the model.
+- `centroids::Vector{Vector{T}}`: returns the values of each variable for each centroid 
+- `cluster::Vector{T}`: return the cluster output for each observation in the dataset.
+- `variance::T`: return the total variance of model, summing the variance of each cluster.
+Where `T` is a subtype of `AbstractFloat`.
+
 """
 mutable struct Kmeans{T<:AbstractFloat}
     df::Matrix{T}
@@ -78,7 +78,7 @@ end
 """
     iteration!(model::Kmeans{T}, niter::Int) where {T<:AbstractFloat}
 
-Random initialize K cluster centroids, then estimate cluster and update centroid `niter` times,
+Random initialize `K` cluster centroids, then estimate cluster and update centroid `niter` times,
 calculate the total variance and evaluate if it's the optimum result.
 """
 function iteration!(model::Kmeans{T}, niter::Int) where {T<:AbstractFloat}
@@ -132,7 +132,7 @@ end
 """
     fit!(model::Kmeans, nstart::Int=50, niter::Int=10)
 
-execute `nstart` times the iteration! function to try obtain the global optimum.
+Execute `nstart` times the `iteration!` function to try obtain the global optimum.
 """
 function fit!(model::Kmeans, nstart::Int=50, niter::Int=10)
     for _ in 1:nstart
