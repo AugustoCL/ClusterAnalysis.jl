@@ -38,7 +38,7 @@ mutable struct Kmeans{T<:AbstractFloat}
     cluster::Vector{T}
     variance::T
 
-    # initialization function
+    # Internal Constructor
     function Kmeans(df::Matrix{T}, K::Int) where {T<:AbstractFloat}
         
         # generate random centroids
@@ -66,6 +66,7 @@ mutable struct Kmeans{T<:AbstractFloat}
     end
 end
 
+# External Constructors
 Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)
 
 function Kmeans(df, K::Int)
