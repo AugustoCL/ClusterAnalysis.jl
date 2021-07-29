@@ -30,7 +30,7 @@ Kmeans(df, K::Int) : where df implements the Tables.jl interface, e.g.: DataFram
 - centroids::Vector{Vector{T}}: returns the values of each variable for each centroid 
 - cluster::Vector{T}: return the cluster output for each observation in the dataset.
 - variance::T: return the total variance of model, summing the variance of each cluster.
-
+Where T is a subtype of AbstractFloat.
 """
 mutable struct Kmeans{T<:AbstractFloat}
     df::Matrix{T}
