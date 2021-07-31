@@ -1,20 +1,27 @@
 # ClusterAnalysis.jl
 
-This package was builded from scratch entirely in [Julia Lang](julialang.org/) and implements (until now) the [K-Means](https://en.wikipedia.org/wiki/K-means_clustering) cluster algorithm. 
+This package was built from scratch, entirely in [Julia Lang](julialang.org/), and implements (until now) the [K-Means](https://en.wikipedia.org/wiki/K-means_clustering) cluster algorithm. 
 
-This is mainly a learning experiment but we construct and documented the algorithm functions to be ready to use by everyone. Just input your data as an Array or a Tables.jl type (like DataFrames), then start fit!() and analyze your results. 
+This is mostly a learning experiment, but the functions were built and documented to be used by anyone (Plug-and-Play). Just input your data as an Array or a Tables.jl type (like DataFrames), then start fit!() and analyze your results. 
 
 We were inspired by reading some articles (in the references) and watching [Andrew NG lectures](https://www.youtube.com/watch?v=hDmNF9JG3lo) and [StatQuest](https://www.youtube.com/watch?v=4b5d3muPQmA) videos about K-Means. Then, we start prototype the pseudo-code in Julia, which result in this package.
 
+
+
 ## Cool vizualizations that explain the K-Means algorithm
-![](imgs/kmeans_stanford_cheatsheet.png)
+<img src="imgs/kmeans_stanford_cheatsheet.png" width="50%">
+
 **Figure 01** - From [Stanford ML CheatSheet](https://stanford.edu/~shervine/teaching/cs-229/cheatsheet-unsupervised-learning#clustering) 
 
-![](imgs/Kmeans_convergence.gif)
+
+<img src="imgs/Kmeans_convergence.gif" width="50%">  
+
 **Figure 02** - From [K-Means wikipedia page](https://en.wikipedia.org/wiki/K-means_clustering#/media/File:K-means_convergence.gif)
 
 ## Benchmarking code
 ```julia
+julia> using ClusterAnalysis
+
 # load iris dataset 
 julia> iris = dataset("datasets", "iris");
 julia> df = Matrix{Float64}(iris[:,1:end-1]);
@@ -28,7 +35,9 @@ julia> @benchmark begin
             fit!(model, nstart, niter)    
         end
 ```
-![](imgs/benchmark_code.png)
+<img src="imgs/benchmark_code.png" width="70%">  
+
+
 
 ## References and Papers
 - [First paper](http://projecteuclid.org/euclid.bsmsp/1200512992) that mentioned K-Means.
