@@ -13,6 +13,21 @@ function euclidian(a::AbstractArray, b::AbstractArray)
 end
 
 """
+    squared_error(df::Matrix{T}) where {T<:AbstractFloat}
+
+Function that evaluate the kmeans fit!(), using the Sum of Squared Error.
+"""
+function squared_error(df::Matrix{T}) where {T<:AbstractFloat}    
+    error = zero(T)
+    for col in eachcol(df)
+        m = mean(col)
+        error += sum((col .- m).^2)
+    end
+    return error
+end
+
+
+"""
     Kmeans(df::Matrix{T}, K::Int) where {T<:AbstractFloat}
 
 Create the K-means cluster model and also initialize calculating the first centroids, estimating clusters and total variance.
@@ -60,7 +75,7 @@ mutable struct Kmeans{T<:AbstractFloat}
         variance = zero(T)
         for k in cl
             df_filter = df[cluster .== k, :]
-            variance += sum( var.( eachcol(df_filter) ) )
+            variance += squared_error(df_filter)
         end
 
         return new{T}(df, K, centroids, cluster, variance)
@@ -118,7 +133,7 @@ function iteration!(model::Kmeans{T}, niter::Int) where {T<:AbstractFloat}
     variance = zero(T)
     for k in cl
         df_filter = model.df[cluster .== k, :]
-        variance += sum( var.(eachcol(df_filter)) )
+        variance += squared_error(df_filter)
     end
 
     # evaluate if update or not the kmeans model (minimizing the total variance) 
