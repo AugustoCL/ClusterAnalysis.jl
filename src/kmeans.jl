@@ -83,7 +83,7 @@ mutable struct Kmeans{T<:AbstractFloat}
             variance += squared_error(df_filter)
         end
 
-        return new{T}(df, K, centroids, cluster, variance)
+        new{T}(df, K, centroids, cluster, variance)
     end
 end
 
@@ -93,6 +93,12 @@ Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)
 function Kmeans(table, K::Int)
     Tables.istable(table) ? (df = Tables.matrix(table)) : throw(ArgumentError("The df argument passed does not implement the Tables.jl interface.")) 
     return Kmeans(df, K)
+end
+
+function kmeans(df, K::Int, nstart::Int = 50, niter::Int = 10)
+    model = Kmeans(df, K)
+    fit!(model, nstart, niter)
+    return model
 end
 
 """
@@ -158,10 +164,4 @@ function fit!(model::Kmeans, nstart::Int = 50, niter::Int = 10)
     for _ in 1:nstart
         iteration!(model, niter)
     end  
-end
-
-function kmeans(df, K::Int, nstart::Int = 50, niter::Int = 10)
-    model = Kmeans(df, K)
-    fit!(model, nstart, niter)
-    return model
 end
