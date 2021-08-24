@@ -1,6 +1,6 @@
 module ClusterAnalysis
 
-export Kmeans, fit!, iteration!
+export Kmeans, kmeans, fit!, iteration!
 
 include("kmeans.jl")
 

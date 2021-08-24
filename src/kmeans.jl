@@ -90,8 +90,8 @@ end
 # External Constructors
 Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)
 
-function Kmeans(df, K::Int)
-    Tables.istable(df) ? (df = Tables.matrix(df)) : throw(ArgumentError("The df argument passed does not implement the Tables.jl interface.")) 
+function Kmeans(table, K::Int)
+    Tables.istable(table) ? (df = Tables.matrix(table)) : throw(ArgumentError("The df argument passed does not implement the Tables.jl interface.")) 
     return Kmeans(df, K)
 end
 
@@ -154,8 +154,14 @@ end
 
 Execute `nstart` times the `iteration!` function to try obtain the global optimum.
 """
-function fit!(model::Kmeans, nstart::Int=50, niter::Int=10)
+function fit!(model::Kmeans, nstart::Int = 50, niter::Int = 10)
     for _ in 1:nstart
         iteration!(model, niter)
     end  
+end
+
+function kmeans(df, K::Int, nstart::Int = 50, niter::Int = 10)
+    model = Kmeans(df, K)
+    fit!(model, nstart, niter)
+    return model
 end
