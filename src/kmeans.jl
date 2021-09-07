@@ -95,7 +95,7 @@ function Kmeans(table, K::Int)
     return Kmeans(df, K)
 end
 
-function kmeans(df, K::Int, nstart::Int = 50, niter::Int = 10)
+function kmeans(df, K::Int; nstart::Int = 50, niter::Int = 10)
     model = Kmeans(df, K)
     fit!(model, nstart, niter)
     return model
