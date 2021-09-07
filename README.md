@@ -12,8 +12,8 @@ Currently we implemented two types of algorithms, a partitioned based ([K-Means]
 > Go check the algorithm's overview that contains all the details of how it works the algorithm and also got the bibliography and papers used during the research and development of the code. It's a great introduction to the algorithm and a good resource to read along with the source code.
 
 ## Algorithm's Overview
-- [DBSCAN](algo_overview/dbscan_overview.html)
-- [K-Means](algo_overview/kmeans_overview.html)
+- [DBSCAN](algo_overview/dbscan_overview.md)
+- [K-Means](algo_overview/kmeans_overview.md)
 
 ## To-Do
 - [ ] Add K-Means++ initialization, to go beyond the random initialization proposed by Andrew NG.
