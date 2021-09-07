@@ -18,9 +18,9 @@ To keep track of the points which are already labelled.
 Used to make the continuous search of density points in a tree structure. That search feed and use the FIFO queue and this structure make the code be very performatic by using the KDTree struct  from [NearestNeighbors.jl](https://github.com/KristofferC/NearestNeighbors.jl/) package.   
 
 The algorithm sets as a `core-point` , points which has more than `min_points` neighbours within this radius `ϵ`. All the points inside this radius distance it's part of the same cluster (same density). Points with less than `min_points` neighbours could be labelled as: 
-- Noise
+- Noise  
 Because doesn't touchs any point already labelled as cluster.
-- Border point
+- Border point  
 Because touchs at least one labelled point, which will also be labelled as the point touched.   
 
 > The distance used in this implementation to calculate the point's neighbours is the [euclidian distance](https://en.wikipedia.org/wiki/Euclidean_distance). In the code, this search for neighbors it's refered as the RangeQuery function and that function it's the most crucial part of the algorithm in question of performancing. Because of that search we incorporate the KDTree structure, cited before, already implemented in `NearestNeighbours.jl`.
