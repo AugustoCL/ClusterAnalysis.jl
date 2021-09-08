@@ -18,16 +18,25 @@ function euclidean(a::AbstractVector{T},
     return √s
 end
 
+
+function squared_error(col::AbstractVector{T}) where {T<:AbstractFloat}
+    m = mean(col)
+    error = zero(T)
+    @simd for i in eachindex(col)
+        @inbounds error += (col[i] - m)^2
+    end
+    return error
+end
+
 """
     squared_error(df::Matrix{T}) where {T<:AbstractFloat}
 
 Function that evaluate the kmeans fit!(), using the Sum of Squared Error.
 """
-function squared_error(df::Matrix{T}) where {T<:AbstractFloat}    
+function squared_error(df::AbstractMatrix{T}) where {T<:AbstractFloat}    
     error = zero(T)
-    for col in eachcol(df)
-        m = mean(col)
-        error += sum((col .- m).^2)
+    @simd for i in 1:size(df, 2)
+        error += squared_error(view(df, :, i))
     end
     return error
 end
