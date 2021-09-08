@@ -8,12 +8,11 @@ Calculate euclidean distance from two vectors.
 """
 function euclidean(a::AbstractVector{T}, 
                    b::AbstractVector{T}) where {T<:AbstractFloat}              
-    n = length(a)
-    @assert n == length(b)
+    @assert length(a) == length(b)
 
     # euclidean(a, b) = √∑(aᵢ- bᵢ)²
     s = zero(T)
-    @simd for i in 1:n
+    @simd for i in eachindex(a)
         @inbounds s += (a[i] - b[i])^2
     end
     return √s
