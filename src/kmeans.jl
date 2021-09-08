@@ -6,14 +6,16 @@ using Tables
 
 Calculate euclidean distance from two vectors.
 """
-function euclidean(a::AbstractVector, b::AbstractVector)
+function euclidean(a::AbstractVector{T}, 
+                   b::AbstractVector{T}) where {T<:AbstractFloat}              
     n = length(a)
     @assert n == length(b)
 
     # euclidean(a, b) = √∑(aᵢ- bᵢ)²
-    s = sum(1:n) do i
-            (a[i] - b[i])^2
-        end
+    s = zero(T)
+    @simd for i in 1:length(a)
+        @inbounds s += (a[i] - b[i])^2
+    end
     return √s
 end
 
