@@ -13,7 +13,7 @@ function euclidean(a::AbstractVector{T},
 
     # euclidean(a, b) = √∑(aᵢ- bᵢ)²
     s = zero(T)
-    @simd for i in 1:length(a)
+    @simd for i in 1:n
         @inbounds s += (a[i] - b[i])^2
     end
     return √s
