@@ -57,7 +57,9 @@ This implementation has an excellent computational performance, being faster tha
 
 <img src="imgs/benchmark_R_kmeans.png" width="70%">   
 
-
+Machine settings used in benchmarking  
+**Processor**: Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz   2.71 GHz  
+**RAM**: 8,00 GB   
 
 ## References and Papers
 - [First paper](http://projecteuclid.org/euclid.bsmsp/1200512992) that mentioned K-Means.
