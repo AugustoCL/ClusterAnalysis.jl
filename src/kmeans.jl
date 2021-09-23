@@ -2,7 +2,7 @@ using Statistics, LinearAlgebra
 using Tables
 
 """
-    struct KmeansResult{T<:Real}
+    struct KmeansResult{T<:AbstractFloat}
         K::Int
         centroids::Vector{Vector{T}}
         cluster::Vector{Int}
@@ -12,7 +12,7 @@ using Tables
 
 Object resulting from kmeans algorithm that contains the number of clusters, centroids, clusters prediction, total-variance-within-cluster and number of iterations until convergence.
 """
-struct KmeansResult{T<:Real}
+struct KmeansResult{T<:AbstractFloat}
     K::Int
     centroids::Vector{Vector{T}}
     cluster::Vector{Int}
@@ -27,7 +27,7 @@ end
 Calculate euclidean distance from two vectors. √∑(aᵢ - bᵢ)²
 """
 function euclidean(a::AbstractVector{T}, 
-                   b::AbstractVector{T}) where {T<:Real}              
+                   b::AbstractVector{T}) where {T<:AbstractFloat}              
     @assert length(a) == length(b)
 
     # euclidean(a, b) = √∑(aᵢ- bᵢ)²
@@ -44,7 +44,7 @@ end
 
 Function that evaluate the kmeans, using the Sum of Squared Error (SSE).
 """
-function squared_error(data::AbstractMatrix{T}) where {T<:Real}    
+function squared_error(data::AbstractMatrix{T}) where {T<:AbstractFloat}    
     error = zero(T)
     @simd for i in 1:size(data, 2)
         error += squared_error(view(data, :, i))
@@ -52,7 +52,7 @@ function squared_error(data::AbstractMatrix{T}) where {T<:Real}
     return error
 end
 
-function squared_error(col::AbstractVector{T}) where {T<:Real}
+function squared_error(col::AbstractVector{T}) where {T<:AbstractFloat}
     m = mean(col)
     error = zero(T)
     @simd for i in eachindex(col)
@@ -67,7 +67,7 @@ end
 
 Calculate the total-variance-within-cluster using the squared_error function.
 """
-function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::Vector{Int}) where {T<:Real}
+function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::Vector{Int}) where {T<:AbstractFloat}
     # evaluate total-variance-within-clusters
     error = zero(T)
     @simd for k in 1:K
@@ -98,7 +98,11 @@ function kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10)
     return kmeans(data, K, nstart=nstart, maxiter=maxiter)
 end
 
-function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int = 10) where {T<:Real}
+function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int = 10) where {T}
+    return kmeans(Matrix{Float64}(data), K, nstart=nstart, maxiter=maxiter)
+end
+
+function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int = 10) where {T<:AbstractFloat}
     
     # generate variables to update with the best result
     nl, nc = size(data)
@@ -124,7 +128,7 @@ function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int 
     return KmeansResult(K, centroids, cluster, withinss, iter)
 end
 
-function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int) where {T<:Real}
+function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int) where {T<:AbstractFloat}
     
     # generate random centroids
     nl = size(data, 1)
