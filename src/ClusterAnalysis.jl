@@ -1,6 +1,6 @@
 module ClusterAnalysis
 
-export Kmeans, kmeans, fit!, iteration!
+export KmeansResult, kmeans
 export DBSCAN, dbscan
 
 include("kmeans.jl")
