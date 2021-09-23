@@ -1,13 +1,33 @@
-using Statistics
+using Statistics, LinearAlgebra
 using Tables
+
+"""
+    struct KmeansResult{T<:Real}
+        K::Int
+        centroids::Vector{Vector{T}}
+        cluster::Vector{Int}
+        withinss::T
+        iter::Int
+    end
+
+Object resulting from kmeans algorithm that contains the number of clusters, centroids, clusters prediction, total-variance-within-cluster and number of iterations until convergence.
+"""
+struct KmeansResult{T<:Real}
+    K::Int
+    centroids::Vector{Vector{T}}
+    cluster::Vector{Int}
+    withinss::T
+    iter::Int
+end
+
 
 """
     euclidean(a::AbstractVector, b::AbstractVector)
 
-Calculate euclidean distance from two vectors.
+Calculate euclidean distance from two vectors. √∑(aᵢ - bᵢ)²
 """
 function euclidean(a::AbstractVector{T}, 
-                   b::AbstractVector{T}) where {T<:AbstractFloat}              
+                   b::AbstractVector{T}) where {T<:Real}              
     @assert length(a) == length(b)
 
     # euclidean(a, b) = √∑(aᵢ- bᵢ)²
@@ -18,8 +38,21 @@ function euclidean(a::AbstractVector{T},
     return √s
 end
 
+"""
+    squared_error(data::AbstractMatrix)
+    squared_error(col::AbstractVector)
 
-function squared_error(col::AbstractVector{T}) where {T<:AbstractFloat}
+Function that evaluate the kmeans, using the Sum of Squared Error (SSE).
+"""
+function squared_error(data::AbstractMatrix{T}) where {T<:Real}    
+    error = zero(T)
+    @simd for i in 1:size(data, 2)
+        error += squared_error(view(data, :, i))
+    end
+    return error
+end
+
+function squared_error(col::AbstractVector{T}) where {T<:Real}
     m = mean(col)
     error = zero(T)
     @simd for i in eachindex(col)
@@ -28,150 +61,127 @@ function squared_error(col::AbstractVector{T}) where {T<:AbstractFloat}
     return error
 end
 
-"""
-    squared_error(df::Matrix{T}) where {T<:AbstractFloat}
 
-Function that evaluate the kmeans fit!(), using the Sum of Squared Error.
 """
-function squared_error(df::AbstractMatrix{T}) where {T<:AbstractFloat}    
+    totalwithinss(data::AbstractMatrix, K::Int, cluster::Vector)
+
+Calculate the total-variance-within-cluster using the squared_error function.
+"""
+function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::Vector{Int}) where {T<:Real}
+    # evaluate total-variance-within-clusters
     error = zero(T)
-    @simd for i in 1:size(df, 2)
-        error += squared_error(view(df, :, i))
+    @simd for k in 1:K
+        error += squared_error(data[cluster .== k, :])
     end
     return error
 end
 
-
 """
-    Kmeans(df::Matrix{T}, K::Int) where {T<:AbstractFloat}
+    kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10)
+    kmeans(data::AbstractMatrix, K::Int; nstart::Int = 10, maxiter::Int = 10)
 
-Create the K-means cluster model and also initialize calculating the first centroids, estimating clusters and total variance.
+Classify all data observations in k clusters by minimizing the total-variance-within each cluster.
 
-# Constructors
-`Kmeans(df::Matrix{T}, K::Int) where {T<:AbstractFloat}` : default constructor.  
-`Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)` : where `df` is an `Matrix{T}` where `T` is not a subtype of `AbstractFloat`.   
-`Kmeans(df, K::Int)` : where `df` implements the Tables.jl interface, e.g.: `DataFrame` type from DataFrames.jl package.   
-
-
-# Fields
-- `df::Matrix{T}`: return the dataset in a Matrix form.
-- `K::Int`: return the number of cluster of the model.
-- `centroids::Vector{Vector{T}}`: returns the values of each variable for each centroid 
-- `cluster::Vector{T}`: return the cluster output for each observation in the dataset.
-- `variance::T`: return the total variance of model, summing the variance of each cluster.
-Where `T` is a subtype of `AbstractFloat`.
-
-"""
-mutable struct Kmeans{T<:AbstractFloat}
-    df::Matrix{T}
-    K::Int
-    centroids::Vector{Vector{T}}
-    cluster::Vector{T}
-    variance::T
-
-    # Internal Constructor
-    function Kmeans(df::Matrix{T}, K::Int) where {T<:AbstractFloat}
-        
-        # generate random centroids
-        nl = size(df, 1)
-        indexes = rand(1:nl, K)
-        centroids = Vector{T}[df[i,:] for i in indexes]
-
-        # estimate clusters
-        cluster = T[]
-        for obs in eachrow(df)
-            dist = [euclidean(obs, c) for c in centroids]
-            cl = argmin(dist)
-            push!(cluster, cl)
-        end
-
-        # evaluate total variance
-        cl = sort(unique(cluster))
-        variance = zero(T)
-        for k in cl
-            df_filter = df[cluster .== k, :]
-            variance += squared_error(df_filter)
-        end
-
-        new{T}(df, K, centroids, cluster, variance)
-    end
+Pseudo-code of the algorithm:
+- Repeat `nstart` times:  
+-- Random initialize `K` clusters centroids.  
+-- Estimate clusters.  
+-- Repeat `maxiter` times:  
+---- Update centroids using the mean().  
+---- Estimate clusters.  
+---- Calculate the total-variance-within-cluster.  
+---- Evaluate the stop rule.  
+- Keep the best result of all `nstart` executions.  
+""" 
+function kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10)
+    Tables.istable(table) ? (data = Tables.matrix(table)) : throw(ArgumentError("The table argument passed does not implement the Tables.jl interface.")) 
+    return kmeans(data, K, nstart=nstart, maxiter=maxiter)
 end
 
-# External Constructors
-Kmeans(df::Matrix{T}, K::Int) where {T} = Kmeans(Matrix{Float64}(df), K)
-
-function Kmeans(table, K::Int)
-    Tables.istable(table) ? (df = Tables.matrix(table)) : throw(ArgumentError("The df argument passed does not implement the Tables.jl interface.")) 
-    return Kmeans(df, K)
-end
-
-function kmeans(df, K::Int; nstart::Int = 50, niter::Int = 10)
-    model = Kmeans(df, K)
-    fit!(model, nstart, niter)
-    return model
-end
-
-"""
-    iteration!(model::Kmeans{T}, niter::Int) where {T<:AbstractFloat}
-
-Random initialize `K` cluster centroids, then estimate cluster and update centroid `niter` times,
-calculate the total variance and evaluate if it's the optimum result.
-"""
-function iteration!(model::Kmeans{T}, niter::Int) where {T<:AbstractFloat}
+function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int = 10) where {T<:Real}
     
-    # Randomly initialize K cluster centroids
-    nl = size(model.df, 1)
-    indexes = rand(1:nl, model.K)
-    centroids = Vector{T}[model.df[i,:] for i in indexes]
-    cluster = T[]
+    # generate variables to update with the best result
+    nl, nc = size(data)
 
-    # estimate cluster and update centroids
-    for _ in 1:niter
-
-        # estimate cluster to all observations 
-        cls = T[]
-        for obs in eachrow(model.df)
-            dist = [euclidean(obs, c) for c in centroids]
-            cl = argmin(dist)
-            push!(cls, cl)
-        end
+    centroids = [Vector{T}(undef, nc) for _ in 1:K]
+    cluster = Vector{Int}(undef, nl)
+    withinss = Inf
+    iter = 0
     
-        # update centroids using the mean
-        cl = sort(unique(cls))
-        ctr = Vector{Float64}[]
-        for k in cl
-            df_filter = model.df[cls .== k, :]
-            push!( ctr, mean.(eachcol(df_filter)) )
-        end
-    
-        # update the variables
-        cluster = cls
-        centroids = ctr
-    end
-
-    # evaluate total variance of all cluster
-    cl = sort(unique(cluster))
-    variance = zero(T)
-    for k in cl
-        df_filter = model.df[cluster .== k, :]
-        variance += squared_error(df_filter)
-    end
-
-    # evaluate if update or not the kmeans model (minimizing the total variance) 
-    if variance < model.variance
-        model.centroids = centroids
-        model.cluster = cluster
-        model.variance = variance
-    end
-end
-
-"""
-    fit!(model::Kmeans, nstart::Int=50, niter::Int=10)
-
-Execute `nstart` times the `iteration!` function to try obtain the global optimum.
-"""
-function fit!(model::Kmeans, nstart::Int = 50, niter::Int = 10)
+    # run multiple kmeans to get the best result
     for _ in 1:nstart
-        iteration!(model, niter)
-    end  
+        
+        new_centroids, new_cluster, new_withinss, new_iter = _kmeans(data, K, maxiter)
+        
+        if new_withinss < withinss
+            centroids .= new_centroids
+            cluster .= new_cluster
+            withinss = new_withinss
+            iter = new_iter
+        end
+    end
+
+    return KmeansResult(K, centroids, cluster, withinss, iter)
+end
+
+function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int) where {T<:Real}
+    
+    # generate random centroids
+    nl = size(data, 1)
+    indexes = rand(1:nl, K)
+    centroids = Vector{T}[data[i, :] for i in indexes]
+
+    # first clusters estimate
+    cluster = Vector{Int}(undef, nl)
+    for (i, obs) in enumerate(eachrow(data))
+        dist = [euclidean(obs, c) for c in centroids]
+        @inbounds cluster[i] = argmin(dist)
+    end
+
+    # first evaluation of total-variance-within-cluster
+    withinss = totalwithinss(data, K, cluster)
+
+    # variables to update during the iterations
+    new_centroids = copy(centroids)
+    new_cluster = copy(cluster)
+    iter = 1
+    norms = norm.(centroids)
+    
+    # start kmeans iterations until maxiter or convergence
+    for _ in 2:maxiter
+
+        # update new_centroids using the mean
+        @simd for k in 1:K             # mean.(eachcol(data[new_cluster .== k, :]))
+            @inbounds new_centroids[k] = vec(mean(view(data, new_cluster .== k, :), dims = 1))
+        end
+
+        # estimate cluster to all observations
+        for (i, obs) in enumerate(eachrow(data))
+            dist = [euclidean(obs, c) for c in new_centroids]
+            @inbounds new_cluster[i] = argmin(dist)
+        end
+
+        # update iter, withinss-variance and calculate centroid norms
+        new_withinss = totalwithinss(data, K, new_cluster)       
+        new_norms = norm.(new_centroids)
+        iter += 1
+        
+        # convergence rule
+        if norm(norms - new_norms) ≈ 0
+            break
+        end
+
+        # update centroid norms
+        norms .= new_norms
+
+        # update centroids, cluster and whithinss
+        if new_withinss < withinss
+            centroids .= new_centroids
+            cluster .= new_cluster
+            withinss = new_withinss
+        end
+
+    end
+
+    return centroids, cluster, withinss, iter
 end
