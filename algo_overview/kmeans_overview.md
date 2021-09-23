@@ -1,4 +1,4 @@
-## What the K-Means do?
+## Overview of K-Means and Code
 
 <img src="imgs/kmeans_example.png" width="70%">  
 
@@ -18,7 +18,7 @@ The inspiration for K-Means came from reading some articles (in the references) 
 
 After that, repeat all steps `nstart` times and select the centroids with the minimum total variance.
 
-The default arguments `nstart` and `maxiter` in the code are 50 and 10, respectively. But could also be changed by the user changing the args in the function `kmeans(data, K, nstart=10, maxiter=10)`, for example.
+The default arguments `nstart` and `maxiter` in the code are 10 and 10, respectively. But could also be changed by the user changing the args in the function `kmeans(data, K, nstart=10, maxiter=10)`, for example.
 
 
 ## Cool vizualizations that explain the K-Means algorithm
