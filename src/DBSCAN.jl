@@ -1,6 +1,24 @@
 using NearestNeighbors, Tables
 
 """
+    struct DBSCAN{T<:AbstractFloat, KD<:KDTree}
+        df::Matrix{T}
+        ϵ::T
+        min_pts::Int
+        labels::Vector{Int}
+        tree::KD
+        clusters::Vector{Vector{Int}}
+    end
+
+Struct that contains all the relevant information about the model. The `data`, `ϵ`, `min_pts`, `labels`, `KDTree` and `clusters`.
+The labels and the clusters are defined during the algorithm inside the routine inside `fit!()` function, which iterate over every observation p in the dataset.
+
+Internal/External Constructors  
+
+* Int - DBSCAN(df::Matrix{T}, ϵ::T, min_pts::Int) where {T<:AbstractFloat}   
+* Ext - DBSCAN(table, ϵ::Real, min_pts::Int)  
+* Ext - DBSCAN(df::Matrix{T}, ϵ::Real, min_pts::Int) where {T<:AbstractFloat} = DBSCAN(df, T(ϵ), min_pts)  
+* Ext - DBSCAN(df::Matrix{T}, ϵ::Real, min_pts::Int) where {T} = DBSCAN(Matrix{Float64}(df), ϵ, min_pts)  
 """
 struct DBSCAN{T<:AbstractFloat, KD<:KDTree}
     df::Matrix{T}
@@ -23,8 +41,7 @@ end
 # External Constructors
 DBSCAN(df::Matrix{T}, ϵ::Real, min_pts::Int) where {T<:AbstractFloat} = DBSCAN(df, T(ϵ), min_pts)
 DBSCAN(df::Matrix{T}, ϵ::Real, min_pts::Int) where {T} = DBSCAN(Matrix{Float64}(df), ϵ, min_pts)
-"""
-"""
+
 function DBSCAN(table, ϵ::Real, min_pts::Int)
     Tables.istable(table) ? (df = Tables.matrix(table)) : throw(ArgumentError("The df argument passed does not implement the Tables.jl interface."))
     return DBSCAN(df, ϵ, min_pts)
@@ -32,6 +49,14 @@ end
 
 
 """
+    dbscan(df, ϵ::Real, min_pts::Int)
+
+Classify data observations in clusters and noises by using a density concept obtained with the parameters input (`ϵ`, `min_pts`).  
+
+The number of clusters are obtained during the execution of the model, therefore, initially the user don't know how much clusters it will obtain.  
+The algorithm use the `KDTree` structure from `NearestNeighbors.jl` to calculate the `RangeQuery` operation more efficiently.  
+
+For more detailed explanation of the algorithm, check the [`Algorithm's Overview of DBSCAN`](https://github.com/AugustoCL/ClusterAnalysis.jl/blob/main/algo_overview/dbscan_overview.md)  
 """ 
 function dbscan(df, ϵ::Real, min_pts::Int)
     model = DBSCAN(df, ϵ, min_pts)
@@ -39,9 +64,7 @@ function dbscan(df, ϵ::Real, min_pts::Int)
     return model
 end
 
-"""
-    fit!(model::DBSCAN)
-"""
+
 function fit!(model::DBSCAN)
     nlines = size(model.df, 1)                  # Number of observations/points in dataset
     visited = falses(nlines)                    # Array to control if point was visited

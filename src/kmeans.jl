@@ -82,16 +82,19 @@ end
 
 Classify all data observations in k clusters by minimizing the total-variance-within each cluster.
 
-Pseudo-code of the algorithm:
-- Repeat `nstart` times:  
--- Random initialize `K` clusters centroids.  
--- Estimate clusters.  
--- Repeat `maxiter` times:  
----- Update centroids using the mean().  
----- Estimate clusters.  
----- Calculate the total-variance-within-cluster.  
----- Evaluate the stop rule.  
-- Keep the best result of all `nstart` executions.  
+
+Pseudo-code of the algorithm:  
+* Repeat `nstart` times:  
+    1. Random initialize `K` clusters centroids.  
+    2. Estimate clusters.  
+    3. Repeat `maxiter` times:  
+        * Update centroids using the mean().  
+        * Estimate clusters.  
+        * Calculate the total-variance-within-cluster.  
+        * Evaluate the stop rule.  
+* Keep the best result of all `nstart` executions.
+
+For more detailed explanation of the algorithm, check the [`Algorithm's Overview of KMeans`](https://github.com/AugustoCL/ClusterAnalysis.jl/blob/main/algo_overview/kmeans_overview.md)  
 """ 
 function kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10)
     Tables.istable(table) ? (data = Tables.matrix(table)) : throw(ArgumentError("The table argument passed does not implement the Tables.jl interface.")) 
