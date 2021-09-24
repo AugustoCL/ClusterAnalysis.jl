@@ -1,6 +1,6 @@
 name = "ClusterAnalysis"
 uuid = "10587292-549a-4141-aed9-b9dca56acf27"
-authors = ["AugustoCL <augustoleal72@gmail.com>"]
+authors = ["AugustoCL <augustoleal72@gmail.com>", "Elias Carvalho <eliascarvdev@gmail.com>"]
 version = "0.1.0"
 
 [deps]

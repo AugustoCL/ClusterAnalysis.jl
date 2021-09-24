@@ -1,6 +1,3 @@
-using Statistics, LinearAlgebra
-using Tables
-
 """
     struct KmeansResult{T<:AbstractFloat}
         K::Int
@@ -44,9 +41,10 @@ end
 
 Function that evaluate the kmeans, using the Sum of Squared Error (SSE).
 """
-function squared_error(data::AbstractMatrix{T}) where {T<:AbstractFloat}    
+function squared_error(data::AbstractMatrix{T}) where {T<:AbstractFloat}
+    ncol = size(data, 2)    
     error = zero(T)
-    @simd for i in 1:size(data, 2)
+    @simd for i in 1:ncol
         error += squared_error(view(data, :, i))
     end
     return error
@@ -174,9 +172,7 @@ function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int) where {T<:Abstra
         iter += 1
         
         # convergence rule
-        if norm(norms - new_norms) ≈ 0
-            break
-        end
+        norm(norms - new_norms) ≈ 0 && break
 
         # update centroid norms
         norms .= new_norms

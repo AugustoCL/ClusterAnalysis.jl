@@ -1,5 +1,3 @@
-using NearestNeighbors, Tables
-
 """
     struct DBSCAN{T<:AbstractFloat, KD<:KDTree}
         df::Matrix{T}
