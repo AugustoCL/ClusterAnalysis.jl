@@ -106,9 +106,9 @@ end
 function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int = 10) where {T<:AbstractFloat}
     
     # generate variables to update with the best result
-    nl, nc = size(data)
+    nl = size(data, 1)
 
-    centroids = [Vector{T}(undef, nc) for _ in 1:K]
+    centroids = Vector{Vector{T}}(undef, K)
     cluster = Vector{Int}(undef, nl)
     withinss = Inf
     iter = 0
