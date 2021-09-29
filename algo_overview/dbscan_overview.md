@@ -1,4 +1,4 @@
-## What the DBSCAN do?
+## Overview of DBSCAN
 [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN) it's a specific clustering algorithm, very apropriated to spatial data. It's a non-parametric method that apply the concept of density, which beyond identify clusters, it's also able to recognize noise observations. Thus, all those ideas it's inside their name, Density Based Spatial Clustering of Application with Noise (DBSCAN), which classifies it as a density-based clustering non-parametric algorithm. 
 
 In a certain way, the algorith try mimic the human hability of recognize groups of points which are close to each other and points which are distant be considered out of the group. 
@@ -55,6 +55,19 @@ julia> min_pts = 10;
 julia> @benchmark m = dbscan(X, ϵ, min_pts);
 ```  
 <img src="imgs/benchmark_dbscan.png" width="70%">  
+  
+**Scikit-Learn with C in backend**
+
+<img src="imgs/benchmark_sklearn_dbscan.png" width="70%">  
+
+**R with C++ in backend**
+
+<img src="imgs/benchmark_R_dbscan.png" width="70%">   
+
+Machine settings used in benchmarking  
+**Processor**: Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz   2.71 GHz  
+**RAM**: 8,00 GB 
+
 
 ## DBSCAN Results
 ```julia

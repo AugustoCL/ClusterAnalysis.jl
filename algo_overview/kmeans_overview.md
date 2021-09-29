@@ -53,7 +53,7 @@ This implementation has an excellent computational performance, being faster tha
 
 <img src="imgs/benchmark_sklearn_kmeans.png" width="70%">  
 
-**R with C + FORTRAN in backend**
+**R with C and FORTRAN in backend**
 
 <img src="imgs/benchmark_R_kmeans.png" width="70%">   
 
