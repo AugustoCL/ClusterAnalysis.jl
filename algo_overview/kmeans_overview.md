@@ -9,16 +9,18 @@ The K-Means is a iterative method, therefore it optimizes the measure of intra-c
 The inspiration for K-Means came from reading some articles (in the references) and watching [Andrew NG lectures](https://www.youtube.com/watch?v=hDmNF9JG3lo) and [StatQuest](https://www.youtube.com/watch?v=4b5d3muPQmA) videos about it. Then, we start prototype the pseudo-code in Julia, which result in this package.
 
 ## Pseudocode
-1. Random initialize k centroids.
+1. Initialize k centroids by K-Means++ algorithm or by random init.
 2. Calculate the distance of every point to every centroid.
 3. Assign every point to a cluster, by choosing the centroid with the minimum distance to the point.
 4. Calculate the Total Variance Within Cluster by the SSE of this iteration.
 5. Recalculate the centroids using the mean of the assigned points.
-6. Repeat the steps 3 to 5, `maxiter` times, until reach at the minimum total variance at step 4.
+6. Repeat the steps 3 to 5, `maxiter` times, until reaching convergence with minimum total variance at step 4.
 
 After that, repeat all steps `nstart` times and select the centroids with the minimum total variance.
 
-The default arguments `nstart` and `maxiter` in the code are 10 and 10, respectively. But could also be changed by the user changing the args in the function `kmeans(data, K, nstart=10, maxiter=10)`, for example.
+The default arguments `nstart`, `maxiter` and `init` in the code are 10, 10, and :kmpp, respectively. But could also be changed by the user changing the args in the function `kmeans(data, K, nstart=10, maxiter=10)`, for example.  
+
+The default initialization is the K-Means++ algorithm (:kmpp) because it achieves faster convergence than the random method, which can be changed to random initialization (:random).
 
 
 ## Cool vizualizations that explain the K-Means algorithm
@@ -79,6 +81,3 @@ struct KmeansResult{T<:Real}
     iter::Int
 end
 ```
-
-## TO-DO
-- [ ] Add K-Means++ initialization. Until now we got only the random initialization proposed by Andrew NG.

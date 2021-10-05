@@ -65,7 +65,7 @@ end
 
 Calculate the total-variance-within-cluster using the squared_error function.
 """
-function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::Vector{Int}) where {T<:AbstractFloat}
+function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::AbstractVector{Int}) where {T<:AbstractFloat}
     # evaluate total-variance-within-clusters
     error = zero(T)
     @simd for k in 1:K
@@ -75,36 +75,39 @@ function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::Vector{Int}) wh
 end
 
 """
-    kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10)
-    kmeans(data::AbstractMatrix, K::Int; nstart::Int = 10, maxiter::Int = 10)
+    kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
+    kmeans(data::AbstractMatrix, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
 
 Classify all data observations in k clusters by minimizing the total-variance-within each cluster.
 
 
 Pseudo-code of the algorithm:  
 * Repeat `nstart` times:  
-    1. Random initialize `K` clusters centroids.  
+    1. Initialize `K` clusters centroids using KMeans++ algorithm or random init.  
     2. Estimate clusters.  
     3. Repeat `maxiter` times:  
         * Update centroids using the mean().  
-        * Estimate clusters.  
+        * Reestimates the clusters.  
         * Calculate the total-variance-within-cluster.  
         * Evaluate the stop rule.  
-* Keep the best result of all `nstart` executions.
+* Keep the best result (minimum total-variance-within-cluster) of all `nstart` executions.
 
 For more detailed explanation of the algorithm, check the [`Algorithm's Overview of KMeans`](https://github.com/AugustoCL/ClusterAnalysis.jl/blob/main/algo_overview/kmeans_overview.md)  
 """ 
-function kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10)
+function kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
     Tables.istable(table) ? (data = Tables.matrix(table)) : throw(ArgumentError("The table argument passed does not implement the Tables.jl interface.")) 
-    return kmeans(data, K, nstart=nstart, maxiter=maxiter)
+    return kmeans(data, K, nstart=nstart, maxiter=maxiter, init=init)
 end
 
-function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int = 10) where {T}
-    return kmeans(Matrix{Float64}(data), K, nstart=nstart, maxiter=maxiter)
+function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp) where {T}
+    return kmeans(Matrix{Float64}(data), K, nstart=nstart, maxiter=maxiter, init=init)
 end
 
-function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int = 10) where {T<:AbstractFloat}
-    
+function kmeans(data::AbstractMatrix{T}, K::Int;
+                nstart::Int = 10,
+                maxiter::Int = 10,
+                init::Symbol = :kmpp) where {T<:AbstractFloat}
+
     # generate variables to update with the best result
     nl = size(data, 1)
 
@@ -112,12 +115,12 @@ function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int 
     cluster = Vector{Int}(undef, nl)
     withinss = Inf
     iter = 0
-    
+
     # run multiple kmeans to get the best result
     for _ in 1:nstart
-        
-        new_centroids, new_cluster, new_withinss, new_iter = _kmeans(data, K, maxiter)
-        
+
+        new_centroids, new_cluster, new_withinss, new_iter = _kmeans(data, K, maxiter, init)
+
         if new_withinss < withinss
             centroids .= new_centroids
             cluster .= new_cluster
@@ -129,12 +132,12 @@ function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int 
     return KmeansResult(K, centroids, cluster, withinss, iter)
 end
 
-function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int) where {T<:AbstractFloat}
+function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int, init::Symbol) where {T<:AbstractFloat}
     
     # generate random centroids
     nl = size(data, 1)
-    indexes = rand(1:nl, K)
-    centroids = Vector{T}[data[i, :] for i in indexes]
+
+    centroids = _initialize_centroids(data, K, init)    
 
     # first clusters estimate
     cluster = Vector{Int}(undef, nl)
@@ -167,7 +170,7 @@ function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int) where {T<:Abstra
         end
 
         # update iter, withinss-variance and calculate centroid norms
-        new_withinss = totalwithinss(data, K, new_cluster)       
+        new_withinss = totalwithinss(data, K, new_cluster)
         new_norms = norm.(new_centroids)
         iter += 1
         
@@ -187,4 +190,36 @@ function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int) where {T<:Abstra
     end
 
     return centroids, cluster, withinss, iter
+end
+
+function _initialize_centroids(data::Matrix{T}, K::Int, init::Symbol) where {T<:AbstractFloat}
+    nl = size(data, 1)
+
+    if init == :random
+        indexes = rand(1:nl, K)
+        centroids = Vector{T}[data[i, :] for i in indexes]
+    elseif init == :kmpp
+        centroids = Vector{Vector{T}}(undef, K)
+        centroids[1] = data[rand(1:nl), :]
+
+        # distance vector for each observation
+        dists = Vector{T}(undef, nl)
+
+        # get each new centroid by the furthest observation (maximum distance)
+        for k in 2:K
+
+            # for each observation get the nearest centroid by the minimum distance
+            for (i, row) in enumerate(eachrow(data))
+                dist_c = [euclidean(row, c) for c in @view centroids[1:(k-1)]]
+                @inbounds dists[i] = minimum(dist_c)
+            end
+
+            # new centroid by the furthest observation
+            @inbounds centroids[k] = data[argmax(dists), :]
+        end
+    else
+        throw(ArgumentError("The symbol :$init is not a valid argument. Use :random or :kmpp."))
+    end
+
+    return centroids
 end

@@ -16,6 +16,6 @@ Currently we implemented two types of algorithms, a partitioned based ([K-Means]
 - [K-Means](algo_overview/kmeans_overview.md)
 
 ## To-Do
-- [ ] Add K-Means++ initialization, to go beyond the random initialization proposed by Andrew NG.
-- [ ] Create Hierarchical clustering algorithms with single, complete and average linkage options.
+- [X] Add K-Means++ initialization, to go beyond the random initialization proposed by Andrew NG.
 - [X] Create DBSCAN algorithm.
+- [ ] Create Hierarchical clustering algorithms with single, complete and average linkage options.
