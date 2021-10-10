@@ -75,8 +75,8 @@ function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::AbstractVector{
 end
 
 """
-    kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
-    kmeans(data::AbstractMatrix, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
+    kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = (:kmpp or :random))
+    kmeans(data::AbstractMatrix, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = (:kmpp or :random))
 
 Classify all data observations in k clusters by minimizing the total-variance-within each cluster.
 
@@ -94,13 +94,13 @@ Pseudo-code of the algorithm:
 
 For more detailed explanation of the algorithm, check the [`Algorithm's Overview of KMeans`](https://github.com/AugustoCL/ClusterAnalysis.jl/blob/main/algo_overview/kmeans_overview.md)  
 """ 
-function kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
+function kmeans(table, K::Int; kwargs...)
     Tables.istable(table) ? (data = Tables.matrix(table)) : throw(ArgumentError("The table argument passed does not implement the Tables.jl interface.")) 
-    return kmeans(data, K, nstart=nstart, maxiter=maxiter, init=init)
+    return kmeans(data, K; kwargs...)
 end
 
-function kmeans(data::AbstractMatrix{T}, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp) where {T}
-    return kmeans(Matrix{Float64}(data), K, nstart=nstart, maxiter=maxiter, init=init)
+function kmeans(data::AbstractMatrix{T}, K::Int; kwargs...) where {T}
+    return kmeans(convert(Matrix{Float64}, data), K; kwargs...)
 end
 
 function kmeans(data::AbstractMatrix{T}, K::Int;
@@ -192,7 +192,7 @@ function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int, init::Symbol) wh
     return centroids, cluster, withinss, iter
 end
 
-function _initialize_centroids(data::Matrix{T}, K::Int, init::Symbol) where {T<:AbstractFloat}
+function _initialize_centroids(data::AbstractMatrix{T}, K::Int, init::Symbol) where {T<:AbstractFloat}
     nl = size(data, 1)
 
     if init == :random
