@@ -15,7 +15,16 @@ Currently we implemented two types of algorithms, a partitioned based ([K-Means]
 - [DBSCAN](algo_overview/dbscan_overview.md)
 - [K-Means](algo_overview/kmeans_overview.md)
 
+## How to install ClusterAnalysis.jl
+Since this package it's not registred, it's necessary to use the github url as shown below.
+
+```julia
+# press ] to enter in Pkg REPL mode.
+julia> ]
+pkg> add https://github.com/AugustoCL/ClusterAnalysis.jl
+```  
+
 ## To-Do
-- [X] Add K-Means++ initialization, to go beyond the random initialization proposed by Andrew NG.
-- [X] Create DBSCAN algorithm.
+- [X] Add K-Means++ initialization, to go beyond the random initialization proposed by Andrew NG. DONE
+- [X] Create DBSCAN algorithm. DONE
 - [ ] Create Hierarchical clustering algorithms with single, complete and average linkage options.
