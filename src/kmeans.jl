@@ -7,7 +7,8 @@
         iter::Int
     end
 
-Object resulting from kmeans algorithm that contains the number of clusters, centroids, clusters prediction, total-variance-within-cluster and number of iterations until convergence.
+Object resulting from kmeans algorithm that contains the number of clusters, centroids, clusters prediction, 
+total-variance-within-cluster and number of iterations until convergence.
 """
 struct KmeansResult{T<:AbstractFloat}
     K::Int
@@ -17,11 +18,39 @@ struct KmeansResult{T<:AbstractFloat}
     iter::Int
 end
 
+function Base.print(io::IO, model::KmeansResult{T}) where {T<:AbstractFloat}
+    p = ["\t$(v)\n" for v in model.centroids]
+
+    print(IOContext(io, :limit => true), "KmeansResult{$T}
+    K = $(model.K)
+    centroids = [\n"
+    , p..., "    ]
+    cluster = ", model.cluster, "
+    within-cluster sum of squares = $(model.withinss)
+    iterations = $(model.iter)"
+    )
+end
+
+Base.show(io::IO, model::KmeansResult) = print(io, model)
 
 """
-    euclidean(a::AbstractVector, b::AbstractVector)
+    ClusterAnalysis.euclidean(a::AbstractVector, b::AbstractVector)
 
-Calculate euclidean distance from two vectors. √∑(aᵢ - bᵢ)²
+Calculate euclidean distance from two vectors. √∑(aᵢ - bᵢ)².
+
+# Arguments (positional)
+- `a`: First vector.
+- `b`: Second vector.
+
+# Example
+```julia
+julia> using ClusterAnalysis
+
+julia> a = rand(100); b = rand(100);
+
+julia> ClusterAnalysis.euclidean(a, b)
+3.8625780213774954
+```
 """
 function euclidean(a::AbstractVector{T}, 
                    b::AbstractVector{T}) where {T<:AbstractFloat}              
@@ -36,10 +65,26 @@ function euclidean(a::AbstractVector{T},
 end
 
 """
-    squared_error(data::AbstractMatrix)
-    squared_error(col::AbstractVector)
+    ClusterAnalysis.squared_error(data::AbstractMatrix)
+    ClusterAnalysis.squared_error(col::AbstractVector)
 
 Function that evaluate the kmeans, using the Sum of Squared Error (SSE).
+
+# Arguments (positional)
+- `data` or `col`: Matrix of data observations or a Vector which represents one column of data.
+
+# Example
+```julia
+julia> using ClusterAnalysis
+
+julia> a = rand(100, 4);
+
+julia> ClusterAnalysis.squared_error(a)
+34.71086095943974
+
+julia> ClusterAnalysis.squared_error(a[:, 1])
+10.06029322934825
+```
 """
 function squared_error(data::AbstractMatrix{T}) where {T<:AbstractFloat}
     ncol = size(data, 2)    
@@ -61,9 +106,27 @@ end
 
 
 """
-    totalwithinss(data::AbstractMatrix, K::Int, cluster::Vector)
+    ClusterAnalysis.totalwithinss(data::AbstractMatrix, K::Int, cluster::Vector)
 
-Calculate the total-variance-within-cluster using the squared_error function.
+Calculate the total-variance-within-cluster using the `squared_error()` function.
+
+# Arguments (positional)
+- `data`: Matrix of data observations.
+- `K`: number of clusters.
+- `cluster`: Vector of cluster for each data observation.
+
+# Example
+```julia
+julia> using ClusterAnalysis
+julia> using CSV, DataFrames
+
+julia> iris = CSV.read(joinpath(pwd(), "path/to/iris.csv"), DataFrame);
+julia> df = iris[:, 1:end-1];
+julia> model = kmeans(df, 3);
+
+julia> ClusterAnalysis.totalwithinss(Matrix(df), model.K, model.cluster)
+78.85144142614601
+```
 """
 function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::AbstractVector{Int}) where {T<:AbstractFloat}
     # evaluate total-variance-within-clusters
@@ -75,13 +138,42 @@ function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::AbstractVector{
 end
 
 """
-    kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = (:kmpp or :random))
-    kmeans(data::AbstractMatrix, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = (:kmpp or :random))
+    kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
+    kmeans(data::AbstractMatrix, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
 
 Classify all data observations in k clusters by minimizing the total-variance-within each cluster.
 
+# Arguments (positional)
+- `table` or `data`: table or Matrix of data observations.
+- `K`: number of clusters.
 
-Pseudo-code of the algorithm:  
+## Keyword 
+- `nstart`: number of starts.
+- `maxiter`: number of maximum iterations.
+- `init`: centroids inicialization algorithm - `:kmpp` (default) or `:random`.
+
+# Example
+```julia
+julia> using ClusterAnalysis
+julia> using CSV, DataFrames
+
+julia> iris = CSV.read(joinpath(pwd(), "path/to/iris.csv"), DataFrame);
+julia> df = iris[:, 1:end-1];
+
+julia> model = kmeans(df, 3)
+KmeansResult{Float64}
+    K = 3
+    centroids = [
+        [5.932307692307693, 2.755384615384615, 4.42923076923077, 1.4384615384615382]
+        [5.006, 3.4279999999999995, 1.462, 0.24599999999999997]
+        [6.874285714285714, 3.088571428571429, 5.791428571428571, 2.117142857142857]
+    ]
+    cluster = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2  …  3, 3, 1, 3, 3, 3, 1, 3, 3, 1]
+    within-cluster sum of squares = 78.85144142614601
+    iterations = 7
+```
+
+# Pseudo-code of the algorithm: 
 * Repeat `nstart` times:  
     1. Initialize `K` clusters centroids using KMeans++ algorithm or random init.  
     2. Estimate clusters.  
@@ -92,16 +184,15 @@ Pseudo-code of the algorithm:
         * Evaluate the stop rule.  
 * Keep the best result (minimum total-variance-within-cluster) of all `nstart` executions.
 
-For more detailed explanation of the algorithm, check the [`Algorithm's Overview of KMeans`](https://github.com/AugustoCL/ClusterAnalysis.jl/blob/main/algo_overview/kmeans_overview.md)  
+For more detailed explanation of the algorithm, check the 
+[`Algorithm's Overview of KMeans`](https://github.com/AugustoCL/ClusterAnalysis.jl/blob/main/algo_overview/kmeans_overview.md).
 """ 
 function kmeans(table, K::Int; kwargs...)
-    Tables.istable(table) ? (data = Tables.matrix(table)) : throw(ArgumentError("The table argument passed does not implement the Tables.jl interface.")) 
+    Tables.istable(table) ? (data = Tables.matrix(table)) : throw(ArgumentError("The table argument passed does not implement the Tables.jl interface."))
     return kmeans(data, K; kwargs...)
 end
 
-function kmeans(data::AbstractMatrix{T}, K::Int; kwargs...) where {T}
-    return kmeans(convert(Matrix{Float64}, data), K; kwargs...)
-end
+kmeans(data::AbstractMatrix{T}, K::Int; kwargs...) where {T} = kmeans(convert(Matrix{Float64}, data), K; kwargs...)
 
 function kmeans(data::AbstractMatrix{T}, K::Int;
                 nstart::Int = 10,
