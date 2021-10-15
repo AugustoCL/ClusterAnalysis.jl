@@ -19,16 +19,14 @@ struct KmeansResult{T<:AbstractFloat}
 end
 
 function Base.print(io::IO, model::KmeansResult{T}) where {T<:AbstractFloat}
-    p = ["\t$(v)\n" for v in model.centroids]
+    p = ["     $(v)\n" for v in model.centroids]
 
     print(IOContext(io, :limit => true), "KmeansResult{$T}
-    K = $(model.K)
-    centroids = [\n"
-    , p..., "    ]
-    cluster = ", model.cluster, "
-    within-cluster sum of squares = $(model.withinss)
-    iterations = $(model.iter)"
-    )
+ K = $(model.K)
+ centroids = [\n", p..., " ]
+ cluster = ", model.cluster, "
+ within-cluster sum of squares = $(model.withinss)
+ iterations = $(model.iter)")
 end
 
 Base.show(io::IO, model::KmeansResult) = print(io, model)
