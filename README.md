@@ -1,6 +1,8 @@
 # ClusterAnalysis.jl
-  
-<img src="https://augustocl.github.io/ClusterAnalysis.jl/plot_dbscan.png" width="70%">  
+
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://augustocl.github.io/ClusterAnalysis.jl/)
+
+<img src="docs/src/plot_dbscan.png" width="70%">  
 
 This package was <ins>**built from scratch**</ins>, entirely in [Julia Lang](julialang.org/), and implements a few popular clustering algorithms like K-Means and DBSCAN. 
 
