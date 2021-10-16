@@ -1,6 +1,6 @@
 # ClusterAnalysis.jl
   
-<img src="algo_overview/imgs/plot_dbscan.png" width="70%">  
+<img src="https://augustocl.github.io/ClusterAnalysis.jl/plot_dbscan.png" width="70%">  
 
 This package was <ins>**built from scratch**</ins>, entirely in [Julia Lang](julialang.org/), and implements a few popular clustering algorithms like K-Means and DBSCAN. 
 
@@ -9,11 +9,14 @@ This is mostly a learning experiment, but the package were also built and docume
 ## Algorithms Implemented
 Currently we implemented two types of algorithms, a partitioned based ([K-Means](https://en.wikipedia.org/wiki/K-means_clustering)) and a spatial density based ([DBSCAN](https://en.wikipedia.org/wiki/DBSCAN)). 
 
-> Go check the algorithm's overview that contains all the details of how it works the algorithm and also got the bibliography and papers used during the research and development of the code. It's a great introduction to the algorithm and a good resource to read along with the source code.
 
 ## Algorithm's Overview
-- [DBSCAN](algo_overview/dbscan_overview.md)
-- [K-Means](algo_overview/kmeans_overview.md)
+Go check the algorithm's overview, in [documentation](https://augustocl.github.io/ClusterAnalysis.jl/algorithms/kmeans.html) that contains all the details of how it works the algorithm and also got the bibliography and papers used during the research and development of the code. 
+
+> It's a great introduction to the algorithm and a good resource to read along with the source code.
+
+- [DBSCAN](https://augustocl.github.io/ClusterAnalysis.jl/algorithms/dbscan.html)
+- [K-Means](https://augustocl.github.io/ClusterAnalysis.jl/algorithms/kmeans.html)
 
 ## How to install ClusterAnalysis.jl
 Since this package it's not registred, it's necessary to use the github url as shown below.
