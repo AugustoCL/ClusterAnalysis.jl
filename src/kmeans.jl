@@ -21,7 +21,7 @@ end
 function Base.print(io::IO, model::KmeansResult{T}) where {T<:AbstractFloat}
     p = ["     $(v)\n" for v in model.centroids]
 
-    print(IOContext(io, :limit => true), "KmeansResult{$T}
+    print(IOContext(io, :limit => true), "KmeansResult{$T}:
  K = $(model.K)
  centroids = [\n", p..., " ]
  cluster = ", model.cluster, "
@@ -159,16 +159,16 @@ julia> iris = CSV.read(joinpath(pwd(), "path/to/iris.csv"), DataFrame);
 julia> df = iris[:, 1:end-1];
 
 julia> model = kmeans(df, 3)
-KmeansResult{Float64}
-    K = 3
-    centroids = [
-        [5.932307692307693, 2.755384615384615, 4.42923076923077, 1.4384615384615382]
-        [5.006, 3.4279999999999995, 1.462, 0.24599999999999997]
-        [6.874285714285714, 3.088571428571429, 5.791428571428571, 2.117142857142857]
-    ]
-    cluster = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2  …  3, 3, 1, 3, 3, 3, 1, 3, 3, 1]
-    within-cluster sum of squares = 78.85144142614601
-    iterations = 7
+KmeansResult{Float64}:
+ K = 3
+ centroids = [
+     [5.932307692307693, 2.755384615384615, 4.42923076923077, 1.4384615384615382]
+     [5.006, 3.4279999999999995, 1.462, 0.24599999999999997]
+     [6.874285714285714, 3.088571428571429, 5.791428571428571, 2.117142857142857]
+ ]
+ cluster = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2  …  3, 3, 1, 3, 3, 3, 1, 3, 3, 1]
+ within-cluster sum of squares = 78.85144142614601
+ iterations = 7
 ```
 
 # Pseudo-code of the algorithm: 
@@ -193,7 +193,7 @@ end
 kmeans(data::AbstractMatrix{T}, K::Int; kwargs...) where {T} = kmeans(convert(Matrix{Float64}, data), K; kwargs...)
 
 function kmeans(data::AbstractMatrix{T}, K::Int;
-                nstart::Int = 10,
+                nstart::Int = 1,
                 maxiter::Int = 10,
                 init::Symbol = :kmpp) where {T<:AbstractFloat}
 
