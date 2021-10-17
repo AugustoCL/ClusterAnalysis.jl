@@ -4,7 +4,7 @@
 <img src="plot_dbscan.png" width="70%">  
 ```
 
-Teste
+Test
 
 This package was **BUILT FROM SCRATCH**, entirely in [Julia Lang](https://julialang.org), and implements a few popular clustering algorithms like K-Means and DBSCAN. 
 
