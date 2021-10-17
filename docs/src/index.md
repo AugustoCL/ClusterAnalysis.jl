@@ -4,6 +4,8 @@
 <img src="plot_dbscan.png" width="70%">  
 ```
 
+Teste
+
 This package was **BUILT FROM SCRATCH**, entirely in [Julia Lang](https://julialang.org), and implements a few popular clustering algorithms like K-Means and DBSCAN. 
 
 This is mostly a learning experiment, but the package were also built and documented to be used by anyone, Plug-and-Play. Just input your data as an Array or a [Tables.jl](https://discourse.julialang.org/t/tables-jl-a-table-interface-for-everyone/14071) type (like [DataFrames.jl](https://dataframes.juliadata.org/stable/)), then start training your clusters algorithms and analyze your results. 
