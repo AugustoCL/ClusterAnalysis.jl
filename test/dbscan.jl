@@ -3,14 +3,22 @@
     Random.seed!(42)
 
     df = CSV.read("data/blob_data.csv", DataFrame, drop=[1]);
-
     X = df[:,1:2];
+
     ϵ = 0.35;
     min_pts = 10;
     
-    X_int = round.(Int, X.*100)
-    ϵ_int = 35.0;
+    @testset "test errors" begin
+        @test_throws ArgumentError dbscan(X[:, 2], ϵ, min_pts)
+    end
     
+    @testset "test Array{Float64, 2}" begin 
+        X_array = Matrix(X)
+        res_ar = dbscan(X_array, ϵ, min_pts)
+        n_clusters = unique(res_ar.labels) |> length
+        @test length(res_ar.labels) == size(X_array, 1)
+    end
+
     @testset "test dimensions results" begin 
         res = dbscan(X, ϵ, min_pts)
         n_clusters = unique(res.labels) |> length
@@ -23,12 +31,10 @@
     end
 
     @testset "test Integer conversion" begin
-        res_int = dbscan(X_int,ϵ_int, min_pts)
+        X_int = round.(Int, X.*100)
+        res_int = dbscan(X_int, ϵ*100, min_pts)
         @test eltype(res_int.df) == Float64
         @test length(res_int.labels) == size(X_int, 1)
     end
 
-    @testset "test errors" begin
-        @test_throws ArgumentError dbscan(X[:, 2], ϵ, min_pts)
-    end
 end

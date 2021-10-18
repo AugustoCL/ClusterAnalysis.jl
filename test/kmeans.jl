@@ -34,7 +34,7 @@
 
         @testset "diferent types of float" begin
             B = rand(Float32, 100, 4)
-            res2 = kmeans(B, k)
+            res2 = kmeans(B, k, init=:random)
             @test eltype(B) == eltype(res2.centroids[1])
         end
         
