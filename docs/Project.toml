@@ -1,2 +1,3 @@
 [deps]
+ClusterAnalysis = "10587292-549a-4141-aed9-b9dca56acf27"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"

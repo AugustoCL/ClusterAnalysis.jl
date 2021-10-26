@@ -1,9 +1,18 @@
 # push!(LOAD_PATH,"../src/")
 using Documenter, ClusterAnalysis
 
+DocMeta.setdocmeta!(ClusterAnalysis, :DocTestSetup, :(using ClusterAnalysis); recursive=true)
+
 makedocs(
     modules=[ClusterAnalysis],
-    format=Documenter.HTML(prettyurls=false),
+    authors="AugustoCL <augustoleal72@gmail.com>, Elias Carvalho <eliascarvdev@gmail.com>",
+    repo="https://github.com/AugustoCL/ClusterAnalysis.jl",
+    sitename="ClusterAnalysis.jl",
+    format=Documenter.HTML(;
+        prettyurls=get(ENV, "CI", "false") == "true",
+        canonical="https://AugustoCL.github.io/ClusterAnalysis.jl",
+        assets=String[],
+    ),
     pages=[
         "Home" => "index.md",
         "Algorithms" => [
@@ -14,10 +23,7 @@ makedocs(
             "Functions" => "API/functions.md", 
             "Types" => "API/types.md"
         ]
-    ],
-    repo="https://github.com/AugustoCL/ClusterAnalysis.jl",
-    sitename="ClusterAnalysis.jl",
-    authors="AugustoCL <augustoleal72@gmail.com>, Elias Carvalho <eliascarvdev@gmail.com>"
+    ]
 )
 
 deploydocs(

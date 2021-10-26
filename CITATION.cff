@@ -1,0 +1,20 @@
+authors: 
+  -
+    family-names: Leal
+    given-names: "Augusto Cesar"
+  -
+    family-names: Carvalho
+    given-names: Elias
+cff-version: "1.1.0"
+date-released: 2021-10-19
+keywords: 
+  - kmeans
+  - dbscan
+  - cluster
+  - julia
+license: MIT
+message: "Use the following metadata to cite our fine selection of goods"
+repository-code: "https://github.com/AugustoCL/ClusterAnalysis.jl"
+title: "ClusterAnalysis.jl"
+version: "0.1.0"
+type: software

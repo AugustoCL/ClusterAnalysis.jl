@@ -1,12 +1,10 @@
 name: CI
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
     tags: '*'
+  pull_request:
 jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
@@ -15,8 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.6' # Replace this with the minimum Julia version that your package supports. E.g. if your package requires Julia 1.5 or higher, change this to '1.5'.
-          - '1' # Leave this line unchanged. '1' will automatically expand to the latest stable 1.x release of Julia.
+          - '1.6'
           - 'nightly'
         os:
           - ubuntu-latest
@@ -49,12 +46,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@latest
+      - uses: julia-actions/setup-julia@v1
         with:
-          version: '1.6'
-      - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Build and deploy
+          version: '1'
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-docdeploy@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For authentication with GitHub Actions token
-        run: julia --project=docs/ docs/make.jl
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+      - run: |
+          julia --project=docs -e '
+            using Documenter: DocMeta, doctest
+            using ClusterAnalysis
+            DocMeta.setdocmeta!(ClusterAnalysis, :DocTestSetup, :(using ClusterAnalysis); recursive=true)
+            doctest(ClusterAnalysis)'
+            

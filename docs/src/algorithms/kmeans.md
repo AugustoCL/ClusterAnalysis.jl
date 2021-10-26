@@ -1,7 +1,7 @@
 ## Overview of K-Means and Code
 
 ```@raw html
-<img src="kmeans_example.png" width="70%">  
+<img src="../kmeans_example.png" width="70%">  
 ```
 
 It's a [cluster algorithm](https://en.wikipedia.org/wiki/Cluster_analysis#cluster) based on [centroids](https://en.wikipedia.org/wiki/Centroid). The method partitions the data into k clusters, where each observation belongs to a cluster/centroid ``k_{i}``. The user needs to provide the number of k cluster desired and to choose the ideal number os k, there are some methods such the [elbow-plot](https://shorturl.at/iosR7) or the [silhuete-plot](https://shorturl.at/isCJU) that could be implemented with this package.  
@@ -20,21 +20,21 @@ The inspiration for K-Means came from reading some articles (in the references) 
 
 After that, repeat all steps `nstart` times and select the centroids with the minimum total variance.
 
-The default arguments `nstart`, `maxiter` and `init` in the code are 10, 10, and :kmpp, respectively. But could also be changed by the user changing the args in the function `kmeans(data, K, nstart=10, maxiter=10)`, for example.  
+The **default arguments** `nstart`, `maxiter` and `init` in the code are 10, 10, and :kmpp, respectively. But could also be changed by the user changing the args in the function `kmeans(data, K, nstart=10, maxiter=10)`, for example.  
 
-The default initialization is the K-Means++ algorithm (:kmpp) because it achieves faster convergence than the random method, which can be changed to random initialization (:random).
+The **default initialization** is the K-Means++ algorithm (`:kmpp`) because it achieves faster convergence than the random method, which can be changed to random initialization (`:random`).
 
 
 ## Cool vizualizations that explain the K-Means algorithm
 **Figure 01** - From [Stanford ML CheatSheet](https://stanford.edu/~shervine/teaching/cs-229/cheatsheet-unsupervised-learning#clustering)  
 ```@raw html
-<img src="kmeans_stanford_cheatsheet.png" width="50%">
+<img src="../kmeans_stanford_cheatsheet.png" width="50%">
 ```
 
 
 **Figure 02** - From [K-Means wikipedia page](https://en.wikipedia.org/wiki/K-means_clustering#/media/File:K-means_convergence.gif)  
 ```@raw html
-<img src="Kmeans_convergence.gif" width="50%">  
+<img src="../Kmeans_convergence.gif" width="50%">  
 ```
 
 ## Benchmarking the algorithm
@@ -47,25 +47,27 @@ iris = dataset("datasets", "iris");
 df = iris[:, 1:end-1];
 
 # parameters of k-means
-k, nstart, maxiter = 4, 10, 10;
+k, nstart, maxiter = 3, 10, 10;
 
 # benchmarking the algorithm
 @benchmark model = kmeans($df, $k, nstart=$nstart, maxiter=$maxiter)
 ```  
+
+**ClusterAnalysis.jl implementation**
 ```@raw html
-<img src="benchmark_code.png" width="70%">  
+<img src="../benchmark_code.png" width="70%">  
 ```
 
 This implementation has an excellent computational performance, being faster than [Scikit-Learn's KMeans](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html#sklearn.cluster.KMeans) and very close to the [kmeans from R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/kmeans), which call C and FORTRAN in its source code.
 
 **Scikit-Learn with C in backend**
 ```@raw html
-<img src="benchmark_sklearn_kmeans.png" width="70%">  
+<img src="../benchmark_sklearn_kmeans.png" width="70%">  
 ```
 
 **R with C and FORTRAN in backend**
 ```@raw html
-<img src="benchmark_R_kmeans.png" width="70%">   
+<img src="../benchmark_R_kmeans.png" width="70%">   
 ```
 
 Machine settings used in benchmarking  
