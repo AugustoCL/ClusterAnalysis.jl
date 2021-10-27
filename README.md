@@ -21,8 +21,8 @@ Currently we implemented two types of algorithms, a partitioned based ([K-Means]
 
 >It's a great introduction to the algorithm and a good resource to read along with the source code.
 
-- [DBSCAN](https://augustocl.github.io/ClusterAnalysis.jl/dev/algorithms/dbscan.html)
-- [K-Means](https://augustocl.github.io/ClusterAnalysis.jl/dev/algorithms/kmeans.html)
+- [DBSCAN](https://augustocl.github.io/ClusterAnalysis.jl/stable/algorithms/dbscan/)
+- [K-Means](https://augustocl.github.io/ClusterAnalysis.jl/stable/algorithms/kmeans/)
 
 ## How to install ClusterAnalysis.jl
 
