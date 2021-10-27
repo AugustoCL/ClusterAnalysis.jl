@@ -4,6 +4,7 @@
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://AugustoCL.github.io/ClusterAnalysis.jl/dev)
 [![Build Status](https://github.com/AugustoCL/ClusterAnalysis.jl/workflows/CI/badge.svg)](https://github.com/AugustoCL/ClusterAnalysis.jl/actions)
 [![Coverage](https://codecov.io/gh/AugustoCL/ClusterAnalysis.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/AugustoCL/ClusterAnalysis.jl)
+[![DOI](https://zenodo.org/badge/390558951.svg)](https://zenodo.org/badge/latestdoi/390558951)
 
 
 <img src="docs/src/plot_dbscan.png" width="70%">  

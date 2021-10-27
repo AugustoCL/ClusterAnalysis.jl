@@ -5,7 +5,7 @@ In a certain way, the algorith try mimic the human hability of recognize groups 
 
 **Figure 01** - Spatial Data example from the [First Paper](https://www.aaai.org/Papers/KDD/1996/KDD96-037.pdf) of DBSCAN  
 ```@raw html
-<img src="../spatial_data.png" width="70%">
+<img src="../spatial_data.png" width="75%">
 ```
 
 This way we could identify points inside a density/cluster and points which isn't in any density cluster, called noises.
@@ -29,19 +29,21 @@ Because touchs at least one labelled point, which will also be labelled as the p
 
 **Figure 02** - Ilustration of DBSCAN from [this Paper](https://www.ccs.neu.edu/home/vip/teach/DMcourse/2_cluster_EM_mixt/notes_slides/revisitofrevisitDBSCAN.pdf)  
 ```@raw html
-<img src="../DBSCAN_ilustration.png" width="50%">
+<img src="../DBSCAN_ilustration.png" width="75%">
 ```
 
 ## Pseudocode
 We got inspired by this pseudo-code presented in the Paper "[DBSCAN Revisited](https://www.ccs.neu.edu/home/vip/teach/DMcourse/2_cluster_EM_mixt/notes_slides/revisitofrevisitDBSCAN.pdf)". Here, the reader could get a overview of the steps of the code.
 
 ```@raw html
-<img src="../pseudo_code.png" width="50%">
+<img src="../pseudo_code.png" width="75%">
 ```
 
 ## A cool visualization that explain the algorithm
 Now, I need to share with the world this amazing website created by [Naftali Harris](https://www.naftaliharris.com/), from this detailed [post](https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/) about DBSCAN. I crop a gif from this interactive visualization because this way I hope would be easier for the reader connect all the information broughted above.  
-<img src="../dbscan_video.gif" width="50%">
+```@raw html
+<img src="../dbscan_video.gif" width="75%">
+```
 
 ## Benchmarking code
 ```julia
@@ -60,17 +62,17 @@ min_pts = 10;
 @benchmark m = dbscan(X, ϵ, min_pts)
 ``` 
 ```@raw html
-<img src="../benchmark_dbscan.png" width="70%">  
+<img src="../benchmark_dbscan.png" width="75%">  
 ```
   
 **Scikit-Learn with C in backend**
 ```@raw html
-<img src="../benchmark_sklearn_dbscan.png" width="70%">  
+<img src="../benchmark_sklearn_dbscan.png" width="75%">  
 ```
 
 **R with C++ in backend**
 ```@raw html
-<img src="../benchmark_R_dbscan.png" width="70%">   
+<img src="../benchmark_R_dbscan.png" width="75%">   
 ```
 
 Machine settings used in benchmarking  
@@ -89,7 +91,7 @@ scatter(X[:,1], X[:,2], zcolor=m.labels,
         title="DBSCAN prediction\n(ϵ=$(ϵ), minPts=$(min_pts))")
 ```
 ```@raw html
-<img src="../plot_dbscan.png" width="70%">  
+<img src="../plot_dbscan.png" width="75%">  
 ```
 
 ## DBSCAN Struct
