@@ -13,7 +13,7 @@ The labels and the clusters are defined during the algorithm inside the routine 
 
 Internal/External Constructors  
 
-* Int - DBSCAN(df::Matrix{T}, ϵ::T, min_pts::Int) where {T<:AbstractFloat}   
+* Int - DBSCAN(df::Matrix{T}, ϵ::T, min_pts::Int) where {T<:AbstractFloat}  
 * Ext - DBSCAN(table, ϵ::Real, min_pts::Int)  
 * Ext - DBSCAN(df::Matrix{T}, ϵ::Real, min_pts::Int) where {T<:AbstractFloat} = DBSCAN(df, T(ϵ), min_pts)  
 * Ext - DBSCAN(df::Matrix{T}, ϵ::Real, min_pts::Int) where {T} = DBSCAN(Matrix{Float64}(df), ϵ, min_pts)  
@@ -26,7 +26,7 @@ struct DBSCAN{T<:AbstractFloat, KD<:KDTree}
     tree::KD
     clusters::Vector{Vector{Int}}
 
-    function DBSCAN(df::Matrix{T}, ϵ::T, min_pts::Int) where {T<:AbstractFloat} 
+    function DBSCAN(df::Matrix{T}, ϵ::T, min_pts::Int) where {T<:AbstractFloat}
         labels = fill(-1, size(df,1))
         tree = KDTree(df', leafsize=20)
         clusters = Vector{Vector{Int}}()
@@ -49,12 +49,12 @@ end
 """
     dbscan(df, ϵ::Real, min_pts::Int)
 
-Classify data observations in clusters and noises by using a density concept obtained with the parameters input (`ϵ`, `min_pts`).  
+Classify data observations in clusters and noises by using a density concept obtained with the parameters input (`ϵ`, `min_pts`).
 
-The number of clusters are obtained during the execution of the model, therefore, initially the user don't know how much clusters it will obtain.  
-The algorithm use the `KDTree` structure from `NearestNeighbors.jl` to calculate the `RangeQuery` operation more efficiently.  
+The number of clusters are obtained during the execution of the model, therefore, initially the user don't know how much clusters it will obtain.
+The algorithm use the `KDTree` structure from `NearestNeighbors.jl` to calculate the `RangeQuery` operation more efficiently.
 
-For more detailed explanation of the algorithm, check the [`Algorithm's Overview of DBSCAN`](https://github.com/AugustoCL/ClusterAnalysis.jl/blob/main/algo_overview/dbscan_overview.md)  
+For more detailed explanation of the algorithm, check the [`Algorithm's Overview of DBSCAN`](https://github.com/AugustoCL/ClusterAnalysis.jl/blob/main/algo_overview/dbscan_overview.md)
 """ 
 function dbscan(df, ϵ::Real, min_pts::Int)
     model = DBSCAN(df, ϵ, min_pts)
@@ -71,25 +71,25 @@ function fit!(model::DBSCAN)
     nb_list = Int[]                             # Array with the neighbors's point
 
     # for each point p in data
-    for p ∈ 1:nlines                      
+    for p ∈ 1:nlines
         visited[p] && continue                  # Check if point p was visited
         push!(FIFO, p)                          # Add p in FIFO (First In First Out) to execute RangeQuery
         fill!(clusters_selected, false)
-       
+
         # start RangeQuery all points in FIFO until finished
         # during loop the FIFO got updated with more points
         while !isempty(FIFO)
             newp = popfirst!(FIFO)              # Remove and return the first element in FIFO
             visited[newp] && continue           # Check if point `newp` was visited
             visited[newp] = true                # assign p as visited
-            
-            nbs = inrange(model.tree,           # get all the neighbors (index) from point `newp` 
+
+            nbs = inrange(model.tree,           # get all the neighbors (index) from point `newp`
                           model.df[newp, :],    # it's the RangeQuery from NearestNeighbors.jl
                           model.ϵ)
-        
+
             # later, try remove nb_list
             append!(nb_list, nbs)               # save neighbor's indexes in nb_list
-            clusters_selected[nb_list] .= true 
+            clusters_selected[nb_list] .= true
 
             if length(nb_list) < model.min_pts  # check if point is core
                 empty!(nb_list)
@@ -103,13 +103,13 @@ function fit!(model::DBSCAN)
 
             empty!(nb_list)                     # clean list to evaluate new point
         end
-        
-        # save the indices from each cluster 
-        ind_cluster = findall(clusters_selected)    
+
+        # save the indices from each cluster
+        ind_cluster = findall(clusters_selected)
         model.min_pts ≤ sum(clusters_selected) && push!(model.clusters, ind_cluster)
     end
 
-    # write labels to struct and disregards duplicate indices    
+    # write labels to struct and disregards duplicate indices
     nc = 1
     for cl in model.clusters
         for i in cl

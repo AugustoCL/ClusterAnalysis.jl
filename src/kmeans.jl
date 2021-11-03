@@ -51,7 +51,7 @@ julia> ClusterAnalysis.euclidean(a, b)
 ```
 """
 function euclidean(a::AbstractVector{T}, 
-                   b::AbstractVector{T}) where {T<:AbstractFloat}              
+                   b::AbstractVector{T}) where {T<:AbstractFloat}
     @assert length(a) == length(b)
 
     # euclidean(a, b) = √∑(aᵢ- bᵢ)²
@@ -85,7 +85,7 @@ julia> ClusterAnalysis.squared_error(a[:, 1])
 ```
 """
 function squared_error(data::AbstractMatrix{T}) where {T<:AbstractFloat}
-    ncol = size(data, 2)    
+    ncol = size(data, 2)
     error = zero(T)
     @simd for i in 1:ncol
         error += squared_error(view(data, :, i))
@@ -136,8 +136,8 @@ function totalwithinss(data::AbstractMatrix{T}, K::Int, cluster::AbstractVector{
 end
 
 """
-    kmeans(table, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
-    kmeans(data::AbstractMatrix, K::Int; nstart::Int = 10, maxiter::Int = 10, init::Symbol = :kmpp)
+    kmeans(table, K::Int; nstart::Int = 1, maxiter::Int = 10, init::Symbol = :kmpp)
+    kmeans(data::AbstractMatrix, K::Int; nstart::Int = 1, maxiter::Int = 10, init::Symbol = :kmpp)
 
 Classify all data observations in k clusters by minimizing the total-variance-within each cluster.
 
@@ -197,7 +197,6 @@ function kmeans(data::AbstractMatrix{T}, K::Int;
                 maxiter::Int = 10,
                 init::Symbol = :kmpp) where {T<:AbstractFloat}
 
-    # generate variables to update with the best result
     nl = size(data, 1)
 
     centroids = Vector{Vector{T}}(undef, K)
@@ -222,11 +221,11 @@ function kmeans(data::AbstractMatrix{T}, K::Int;
 end
 
 function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int, init::Symbol) where {T<:AbstractFloat}
-    
-    # generate random centroids
+
     nl = size(data, 1)
 
-    centroids = _initialize_centroids(data, K, init)    
+    # generate random centroids
+    centroids = _initialize_centroids(data, K, init)
 
     # first clusters estimate
     cluster = Vector{Int}(undef, nl)
@@ -243,7 +242,7 @@ function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int, init::Symbol) wh
     new_cluster = copy(cluster)
     iter = 1
     norms = norm.(centroids)
-    
+
     # start kmeans iterations until maxiter or convergence
     for _ in 2:maxiter
 
@@ -262,7 +261,7 @@ function _kmeans(data::AbstractMatrix{T}, K::Int, maxiter::Int, init::Symbol) wh
         new_withinss = totalwithinss(data, K, new_cluster)
         new_norms = norm.(new_centroids)
         iter += 1
-        
+
         # convergence rule
         norm(norms - new_norms) ≈ 0 && break
 
