@@ -85,19 +85,18 @@ julia> ClusterAnalysis.squared_error(a[:, 1])
 ```
 """
 function squared_error(data::AbstractMatrix{T}) where {T<:AbstractFloat}
-    ncol = size(data, 2)
     error = zero(T)
-    @simd for i in 1:ncol
+    @simd for i in axes(data, 2)
         error += squared_error(view(data, :, i))
     end
     return error
 end
 
 function squared_error(col::AbstractVector{T}) where {T<:AbstractFloat}
-    m = mean(col)
+    μ = mean(col)
     error = zero(T)
     @simd for i in eachindex(col)
-        @inbounds error += (col[i] - m)^2
+        @inbounds error += (col[i] - μ)^2
     end
     return error
 end
