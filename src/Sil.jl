@@ -1,3 +1,5 @@
+using ClusterAnalysis, DataFrames, Statistics, Tables, BenchmarkTools
+
 ## 1. Types declaration
 abstract type Silhouette end
 struct Common <: Silhouette end
